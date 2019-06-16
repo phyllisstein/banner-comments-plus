@@ -1,6 +1,6 @@
 'use strict';
 import * as vscode from 'vscode';
-import * as figlet from 'figlet'; 
+import * as figlet from 'figlet';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as commentJson from 'comment-json';
@@ -379,7 +379,13 @@ function getDefaultConfig(languageId) {
 }
 
 function getCommentConfig(languageId:string):any {
-    let langConfig:any = getLanguageConfig(languageId);
+    let langConfig:any;
+    try {
+        langConfig = getLanguageConfig(languageId);
+    } catch (_) {
+        langConfig = null;
+    }
+
     if (!langConfig) console.warn("BannerComments+: Language Config Not Found.");
     else {
         if (langConfig instanceof Array) {
@@ -470,7 +476,7 @@ function loadCustomFonts () {
         }
     });
 }
-    
+
 function bcpFontsSync () {
     return oldFontsSync().concat(BCP_ADDED_FONTS, USER_ADDED_FONTS);
 }
@@ -548,7 +554,7 @@ function quickPickCustomList() {
 function addDefaultPick(otherList) {
     var def = [ {label:"Default Value", description:""} ]
     if (otherList) return def.concat(otherList);
-    else return def 
+    else return def
 }
 
 function generateNewConfig() {
@@ -578,7 +584,7 @@ function generateNewConfig() {
                 if (_input.label == "Default Value") {
                     if (saveDefaults) config.font = defaultConfig.figletConfig.font;
                 } else config.font = _input.label;
-                // horizontalLayout    
+                // horizontalLayout
                 vscode.window.showQuickPick(addDefaultPick(quickPickLayoutChoices()), {placeHolder: "horizontalLayout"}).then(_input => {
                     if (_input.label == "Default Value") {
                         if (saveDefaults) config.horizontalLayout = defaultConfig.figletConfig.horizontalLayout;
@@ -595,12 +601,12 @@ function generateNewConfig() {
                             } else config.trimTrailingWhitespace = _input.label == "True" ? true : false;
                             // trimEmptyLines
                             vscode.window.showQuickPick(addDefaultPick(quickPickBooleanChoices()), {placeHolder: "trimEmptyLines"}).then(_input => {
-                                if (_input.label == "Default Value") { 
+                                if (_input.label == "Default Value") {
                                     if (saveDefaults) config.trimEmptyLines = defaultConfig.options.trimEmptyLines;
                                 } else config.trimEmptyLines = _input.label == "True" ? true : false;
                                 // prefix
                                 vscode.window.showInputBox({prompt: "Prefix - '' for empty, Esc for Default Value"}).then(_input => {
-                                    if (!_input) { 
+                                    if (!_input) {
                                         if (saveDefaults) config.prefix = defaultConfig.options.prefix;
                                     } else {
                                         if (_input == "''") config.prefix = "";
